@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const { login } = require('./liapi')
 
 let command = process.argv[2]
