@@ -63,6 +63,10 @@ function log(err, res){
 
 readstate()
 
+function parseplayersfromteams(teams){
+    return teams.split("\n").map((team)=>[ team.match(new RegExp(`" by (.*)$`))[1], team.match(new RegExp(`^([^ ]+)`))[1] ])
+}
+
 function login(username, password){
     superagent.agent()
     .post(LOGIN_URL)        
@@ -159,6 +163,13 @@ function createtourney(username, argsopt){
                     log(err, res)
 
                     open(turl)
+
+                    let i = 0
+                    for(let [ username, teamid ] of parseplayersfromteams(template.teams)){
+                        setTimeout(function(){
+                            jointourney(id, username, null, teamid)
+                        },(i++) * 3000)
+                    }
                 })
             }else{
                 open(location)
