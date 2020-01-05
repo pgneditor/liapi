@@ -6,6 +6,7 @@ const open = require('open')
 const BASE_URL = "https://lichess.org"
 
 const LOGIN_URL = BASE_URL + "/login?referrer=%2F"
+const TOURNEY_URL = BASE_URL + "/tournament"
 const CREATE_TOURNEY_URL = BASE_URL + "/tournament/new"
 
 const STATE_PATH = "state.json"
@@ -143,7 +144,25 @@ function createtourney(username, argsopt){
     })
 }
 
+function jointourney(id, username, password, teamid){
+    let turl = TOURNEY_URL + "/" + id
+    let jurl = turl + "/join"
+
+    superagent
+    .post(jurl)
+    .redirects(0)
+    .set("Content-Type", "application/json; charset=UTF-8")
+    .set("Cookie", cookie(username))
+    .send({
+        p: password || null,
+        team: teamid || null
+    })
+    .end((err, res)=>{            
+        log(err, res)
+    })           
+}
+
 module.exports.login = login
 module.exports.writestate = writestate
 module.exports.createtourney = createtourney
-
+module.exports.jointourney = jointourney
