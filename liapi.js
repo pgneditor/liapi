@@ -67,7 +67,8 @@ function parseplayersfromteams(teams){
     return teams.split("\n").map((team)=>[ team.match(new RegExp(`" by (.*)$`))[1], team.match(new RegExp(`^([^ ]+)`))[1] ])
 }
 
-function login(username, password){
+function login(username, password, callbackopt){
+    let callback = callbackopt || (()=>{})
     superagent.agent()
     .post(LOGIN_URL)        
     .set("Referer", LOGIN_URL)                
@@ -80,7 +81,8 @@ function login(username, password){
 
         if(!hdr["set-cookie"]){
             console.log("no set-cookie header")                
-            process.exit()
+            callback({ok: false, status: "no set-cookie header"})
+            return
         }
         
         let setcookie = hdr['set-cookie'][0]
@@ -90,8 +92,9 @@ function login(username, password){
         let m = setcookie.match(/lila2=([^;]+);/)
 
         if(!m){
-            console.log("no lila2 cookie")
-            process.exit()
+            console.log("no lila2 cookie")            
+            callback({ok: false, status: "no lila2 cookie"})
+            return
         }
 
         let lila2 = m[1]
@@ -103,6 +106,8 @@ function login(username, password){
         }
 
         writestate()
+
+        callback({ok: true})
     })
 }
 
@@ -200,3 +205,4 @@ module.exports.login = login
 module.exports.writestate = writestate
 module.exports.createtourney = createtourney
 module.exports.jointourney = jointourney
+module.exports.state = state

@@ -1,7 +1,13 @@
 const express = require('express')
 const open = require('open')
+const fs = require('fs')
+
+const { state, login } = require('./liapi')
 
 const PORT = process.env.PORT || 8080
+
+const SUCCESS = true
+const ERROR = false
 
 function IS_DEV(){
     return !(!process.env.LIAPI_DEV)
@@ -36,7 +42,7 @@ app.get('/', (req, res) => res.send(`
         <script src="client/cdn/react-dom.production.min.js"></script>        
     `}
 
-    <script src="client/js/utils.js?ver=1578207272576.1743"></script>
+    <script src="client/js/utils.js?ver=1578211139281.2131"></script>
 
   </head>
 
@@ -44,7 +50,7 @@ app.get('/', (req, res) => res.send(`
 
     <div id="root"></div>
 
-    <script src="client/js/index.js?ver=1578207420440.8667"></script>
+    <script src="client/js/index.js?ver=1578212021281.0322"></script>
 
   </body>
 
@@ -53,6 +59,38 @@ app.get('/', (req, res) => res.send(`
 
 app.use(express.static(__dirname))
 app.use(express.json({limit: '100MB'}))
+
+function apisend(res, ok, obj){
+    obj.ok = ok
+    res.send(JSON.stringify(obj))
+}
+
+function getstate(res, payload){
+    apisend(res, SUCCESS, {state: state})
+}
+
+function cli(res, payload){
+    let command = payload.command
+    let commandparts = command.split(" ")
+    command = commandparts[0]
+    if(command == "login"){
+        login(commandparts[1], commandparts[2], (response)=>{
+            response.state = state
+            apisend(res, response.ok, response)
+        })
+    }
+}
+
+app.post('/api', (req, res) => {                
+    let body = req.body
+
+    try{
+        eval(`${body.topic}(res, body)`)
+    }catch(err){
+        console.log(err)
+        apisend(res, ERROR, `${err}`)
+    }
+})
 
 app.listen(PORT, () => console.log(`React Chess listening on port ${PORT}.`))
 
