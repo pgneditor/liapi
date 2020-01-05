@@ -50,7 +50,7 @@ app.get('/', (req, res) => res.send(`
 
     <div id="root"></div>
 
-    <script src="client/js/index.js?ver=1578214068342.458"></script>
+    <script src="client/js/index.js?ver=1578216753742.0586"></script>
 
   </body>
 
@@ -98,6 +98,10 @@ function cli(res, payload){
             apisend(res, response.ok, response)
         })
     }
+}
+
+function tick(res){
+    apisend(res, SUCCESS, {})
 }
 
 app.post('/api', (req, res) => {                

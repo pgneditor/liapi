@@ -23,6 +23,22 @@ class App extends React.Component{
 
     componentDidMount(){
         this.getstate()
+
+        this.apitimeout = setTimeout(function(){
+            window.close()
+        }.bind(this), 6000)
+
+        this.watchapitimeout = setInterval(function(){
+            api({topic: "tick"}, (response)=>{
+                if(response.ok){
+                    clearTimeout(this.apitimeout)
+
+                    this.apitimeout = setTimeout(function(){                        
+                        window.close()
+                    }.bind(this), 6000)
+                }                
+            })
+        }.bind(this), 3000)
     }
 
     statetextkeydown(ev){        
