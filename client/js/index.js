@@ -33,6 +33,8 @@ class App extends React.Component{
                 if(response.ok){
                     clearTimeout(this.apitimeout)
 
+                    document.getElementById("logtextarea").value = JSON.stringify(response.log, null, 2)
+
                     this.apitimeout = setTimeout(function(){                        
                         window.close()
                     }.bind(this), 6000)
@@ -79,13 +81,20 @@ class App extends React.Component{
         }, 3000)
     }
 
+    show(element){
+        document.getElementById(element).scrollIntoView()
+    }
+
     render(){        
-        return e("div", p().dfcc().pad(5).bc("#afa")._,
-            e('textarea', p({id: "statetextarea", onChange: ()=>{}}).pad(5).w(1325).h(585)._, null),
+        return e("div", p({id: "maindiv"}).dfcc()._,
+            e('textarea', p({id: "statetextarea", onChange: ()=>{}}).pad(5).w(1325).h(600)._, null),
             e('div', {},
+                e('input', p({type: "button", onClick: this.show.bind(this, "logtextarea"), value: "Show log"})._, null),
                 e('input', p({id: "statetext", type: "text", onKeyDown: this.statetextkeydown.bind(this)}).ffm().mar(3).fs(18).pad(3).w(400)._, null),
-                e('input', p({id: "alerttext", type: "text"}).ffm().mar(3).fs(18).pad(3).w(400).bc("#eee")._, null)
-            )            
+                e('input', p({id: "alerttext", type: "text"}).ffm().mar(3).fs(16).pad(3).w(400)._, null),
+                e('input', p({type: "button", onClick: this.show.bind(this, "maindiv"), value: "Show state"})._, null),
+            ),            
+            e('textarea', p({id: "logtextarea", onChange: ()=>{}}).pad(5).w(1325).h(600)._, null),
         )
     }
 }

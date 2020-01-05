@@ -50,7 +50,7 @@ app.get('/', (req, res) => res.send(`
 
     <div id="root"></div>
 
-    <script src="client/js/index.js?ver=1578221346442.1104"></script>
+    <script src="client/js/index.js?ver=1578260330840.21"></script>
 
   </body>
 
@@ -62,6 +62,9 @@ app.use(express.json({limit: '100MB'}))
 
 function apisend(res, ok, obj){
     obj.ok = ok
+    try{        
+        obj.log = {...{updated: new Date().toLocaleString()}, ...JSON.parse(fs.readFileSync("log.json").toString())}
+    }catch(err){"No log."}
     res.send(JSON.stringify(obj))
 }
 
