@@ -25,15 +25,22 @@ class App extends React.Component{
         this.getstate()
     }
 
-    statetextkeydown(ev){
+    statetextkeydown(ev){        
         if(ev.keyCode == 13){
             let content = document.getElementById("statetext").value
             document.getElementById("statetext").value = ""
+            this.lastcommand = content
             api({topic: "cli", command: content}, (response)=>{
                 if(response.ok){
                     this.setstatetextfromobj(response.state)            
+                    if(response.turl){
+                        window.open(response.turl, "_blank")
+                    }
                 }
             })
+        }
+        if(ev.keyCode == 38){
+            document.getElementById("statetext").value = this.lastcommand
         }
     }
 

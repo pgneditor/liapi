@@ -183,7 +183,8 @@ function createtourney(username, argsopt){
     })    
 }
 
-function jointourney(id, username, password, teamid){
+function jointourney(id, username, password, teamid, callbackopt){
+    let callback = callbackopt || (()=>{})
     let turl = TOURNEY_URL + "/" + id
     let jurl = turl + "/join"
 
@@ -198,6 +199,7 @@ function jointourney(id, username, password, teamid){
     })
     .end((err, res)=>{            
         log(err, res)
+        callback({ok: true})
     })           
 }
 
@@ -206,3 +208,4 @@ module.exports.writestate = writestate
 module.exports.createtourney = createtourney
 module.exports.jointourney = jointourney
 module.exports.state = state
+module.exports.TOURNEY_URL = TOURNEY_URL

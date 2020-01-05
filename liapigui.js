@@ -2,7 +2,7 @@ const express = require('express')
 const open = require('open')
 const fs = require('fs')
 
-const { state, login } = require('./liapi')
+const { state, login, jointourney, TOURNEY_URL } = require('./liapi')
 
 const PORT = process.env.PORT || 8080
 
@@ -50,7 +50,7 @@ app.get('/', (req, res) => res.send(`
 
     <div id="root"></div>
 
-    <script src="client/js/index.js?ver=1578212021281.0322"></script>
+    <script src="client/js/index.js?ver=1578214068342.458"></script>
 
   </body>
 
@@ -77,6 +77,16 @@ function cli(res, payload){
         login(commandparts[1], commandparts[2], (response)=>{
             response.state = state
             apisend(res, response.ok, response)
+        })
+    }
+    if(command == "jointourney"){
+        let id = commandparts[1]
+        let usernameparts = commandparts[2].split(":")
+        let username = usernameparts[0]
+        let password = usernameparts.length > 1 ? usernameparts[1] : null
+        let teamid = commandparts[3] || null
+        jointourney(id, username, password, teamid, (response)=>{
+            apisend(res, response.ok, {turl: `${TOURNEY_URL}/${id}`, state: state})
         })
     }
 }
