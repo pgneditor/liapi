@@ -1,6 +1,6 @@
 {
   "name": "liapi",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "Automate routines that need cookie authorization.",
   "main": "liapi.js",
   "scripts": {
@@ -8,7 +8,8 @@
     "cli": "node liapicli.js"
   },
   "bin": {
-    "liapicli": "./liapicli.js"
+    "liapicli": "./liapicli.js",
+    "liapigui": "./liapigui.js"
   },
   "keywords": [
     "lichess",
