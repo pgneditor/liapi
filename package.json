@@ -1,6 +1,6 @@
 {
   "name": "liapi",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "Automate routines that need cookie authorization.",
   "main": "liapi.js",
   "scripts": {
