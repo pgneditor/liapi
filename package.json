@@ -1,6 +1,6 @@
 {
   "name": "liapi",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Automate routines that need cookie authorization.",
   "main": "liapi.js",
   "scripts": {
@@ -28,6 +28,7 @@
     "url": "https://github.com/pgneditor/liapi.git"
   },
   "dependencies": {
+    "express": "^4.17.1",
     "open": "^7.0.0",
     "superagent": "^5.1.3"
   }
