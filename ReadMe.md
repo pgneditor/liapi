@@ -2,7 +2,7 @@
 
 Automate routines that need cookie authorization.
 
-The module can be used in three ways.
+The module can be used in three ways, as  Node.js module, as a CLI and as a GUI.
 
 # Installation
 
@@ -20,7 +20,7 @@ let { login } = require('liapi')
 login(username, password)
 ```
 
-## As a command interpreter
+## As a CLI
 
 Needs global installation:
 
@@ -40,7 +40,7 @@ Usage ( at the command prompt ):
 
 `liapigui`
 
-This will open up a browser window, in which you can see the state and issue commands.
+This will open up a browser window, in which you can edit the state and issue commands.
 
 # API
 
@@ -72,13 +72,13 @@ let { jointourney } = require('liapi')
 jointourney(tourneyid, username, password, teamid, callbackopt)
 ```
 
-Arguments `password` ( tourney password, not user password ! ), `teamid` ( for team battles only ) and `callbackopt` ( defines a callback upon success ) are optional, use `null` to ignore them.
+Arguments `password` ( tourney password, not user password ! ), `teamid` ( for team battles only ) and `callbackopt` ( defines a callback upon success ) are optional, use `null` to ignore them. If `callbackopt` is a function it will be called after submitting the request.
 
 ### CLI / GUI
 
 `jointourney tourneyid username[:password] teamid`
 
-Note that you have to attach an optional password to the second argument with ":". You can omit the third teamid parameter.
+Note that you can attach an optional password to the second argument with ":". The `teamid` parameter is optional, it should only be used for joining a team battle.
 
 ## createtourney
 
@@ -86,12 +86,37 @@ Creates a tourney. Upon success the tourney create parameters are saved in `stat
 
 Tourneys are created from a username and a template. There is always a `default` template in `state.json`. You can copy it and add it to to `state.templates` under a new id. Edit the parameters, then you can use this id for creating a custom tournament.
 
+For team battles the template should have a `teamBattleByTeam` field, containing the `teamid` of the team creating the team battle.
+
+For team battles the template should also have a `teams` field. Its format is newline separated lines of text, each line describing a team in `teamid "Team name" by teamleader` format, as required in the second step of team battle creation. However it should be properly encoded as a JSON string with escapes for quotation marks and newlines.
+
 ```javascript
 {
-"templates": {
+  "templates": {
     "default": {
       "name": "Short Bullet Tourney",
       "clockTime": "2",
+      "clockIncrement": "0",
+      "minutes": "45",
+      "waitMinutes": "5",
+      "variant": "standard",
+      "rated": "true",
+      "position": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "password": "",
+      "conditions.teamMember.teamId": "",
+      "conditions.minRating.rating": "",
+      "conditions.minRating.perf": "",
+      "conditions.maxRating.rating": "",
+      "conditions.maxRating.perf": "",
+      "conditions.nbRatedGame.nb": "",
+      "conditions.nbRatedGame.perf": "",
+      "berserkable": "true",
+      "startDate": "",
+      "teamBattleByTeam": ""
+    },
+    "custom": {
+      "name": "Short Blitz Tourney",
+      "clockTime": "3",
       "clockIncrement": "0",
       "minutes": "45",
       "waitMinutes": "5",
@@ -122,14 +147,21 @@ let { createtourney } = require('liapi')
 createtourney(username, template)
 ```
 
-Template is either a full or partial template. It itself can have a template field `template.template`, which is a string that specifies which template to use from `state.json`. Other fields then modify this original template. If omitted, the default template will be used as a basis.
+Template is either a full or partial template object. It itself can have a template id field `template.template`, which is a string that specifies which template to use from `state.json` as a basis ( if `template.template` is omitted, then the default template will be used as a basis.). Other fields in `template` argument modify this original template.
+
+Examples:
+
+`createtourney("userfoo", {})` default template will be used
+
+`createtourney("userfoo", {template: "custom"})` "custom" template will be used
+
+`createtourney("userfoo", {template: "custom", waitMinutes: "10"})` "custom" template with `waitMinutes` modified to 10
 
 ### CLI / GUI
 
 `createtourney username template`
 
-Here template is a template key in `state.json`. The whole template will be taken from `state.json`. The template parameter is optional, if not present the default template will be used. Note that this should not be edited. To edit a template you have to create a separate template under a custom key ( other than default ).
-
+Here `template` is a template id in `state.json`. The whole template will be taken from `state.json`. The template parameter is optional, if not present the default template will be used. Note that the default template should not be edited. To edit a template you have to create a separate template under a custom key ( other than default ).
 
 # Editing and saving `state.json`
 
