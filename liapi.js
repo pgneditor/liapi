@@ -51,6 +51,9 @@ function readstate(){
         "startDate": "",
         "teamBattleByTeam": ""
     }
+    if(!state.created){
+        state.created = {}
+    }
 }
 
 function writestate(stateopt){
@@ -174,7 +177,8 @@ function createtourney(username, argsopt, callbackopt){
                     if(!callbackopt){
                         open(turl)
                     }
-                    callback({ok: true, turl: turl})
+                    logcreate(turl, template)
+                    callback({ok: true, turl: turl, state: state})
 
                     let i = 0
                     for(let [ username, teamid ] of parseplayersfromteams(template.teams)){
@@ -188,10 +192,16 @@ function createtourney(username, argsopt, callbackopt){
                 if(!callbackopt){
                     open(turl)
                 }
-                callback({ok: true, turl: turl})
+                logcreate(turl, template)
+                callback({ok: true, turl: turl, state: state})
             }
         }
     })    
+}
+
+function logcreate(turl, template){
+    state.created[turl] = {...{turl: turl}, ...template}
+    writestate()
 }
 
 function jointourney(id, username, password, teamid, callbackopt){

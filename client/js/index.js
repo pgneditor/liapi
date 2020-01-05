@@ -57,7 +57,9 @@ class App extends React.Component{
             }else{
                 api({topic: "cli", command: content}, (response)=>{
                     if(response.ok){
-                        this.setstatetextfromobj(response.state)            
+                        if(response.state){
+                            this.setstatetextfromobj(response.state)            
+                        }                        
                         if(response.turl){
                             window.open(response.turl, "_blank")
                         }
