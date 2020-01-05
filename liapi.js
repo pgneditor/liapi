@@ -139,9 +139,32 @@ function createtourney(username, argsopt){
         let location = err.response.header.location
 
         if(location){
-            open(BASE_URL + location)
+            let m = location.match(/edit\/(.*)/)
+
+            if(m){
+                let id = m[1]
+
+                let turl = TOURNEY_URL + "/" + id
+
+                superagent.agent()
+                .post(BASE_URL + location)    
+                .redirects(0)
+                .type("form")
+                .send({
+                    "teams": template.teams,
+                    "nbLeaders": template.nbLeaders || "5"
+                })        
+                .set("Cookie", cookie(username))
+                .end((err, res)=>{            
+                    log(err, res)
+
+                    open(turl)
+                })
+            }else{
+                open(location)
+            }
         }
-    })
+    })    
 }
 
 function jointourney(id, username, password, teamid){

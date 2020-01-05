@@ -13,7 +13,7 @@ if(command == "login"){
 }
 
 if(command == "createtourney"){
-    createtourney(process.argv[3], process.argv[4])
+    createtourney(process.argv[3], { template: process.argv[4] })
 }
 
 if(command == "jointourney"){
