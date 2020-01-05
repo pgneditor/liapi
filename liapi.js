@@ -115,7 +115,8 @@ function cookie(username){
     return "lila2=" + state.users[username].lila2
 }
 
-function createtourney(username, argsopt){
+function createtourney(username, argsopt, callbackopt){
+    let callback = callbackopt || (()=>{})
     let args = argsopt || {}
 
     if(!args.template) args.template = "default"
@@ -167,7 +168,10 @@ function createtourney(username, argsopt){
                 .end((err, res)=>{            
                     log(err, res)
 
-                    open(turl)
+                    if(!callbackopt){
+                        open(turl)
+                    }
+                    callback({ok: true, turl: turl})
 
                     let i = 0
                     for(let [ username, teamid ] of parseplayersfromteams(template.teams)){
@@ -177,7 +181,11 @@ function createtourney(username, argsopt){
                     }
                 })
             }else{
-                open(location)
+                let turl = BASE_URL + location
+                if(!callbackopt){
+                    open(turl)
+                }
+                callback({ok: true, turl: turl})
             }
         }
     })    
