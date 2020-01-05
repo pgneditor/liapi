@@ -3,6 +3,10 @@ const fs = require('fs')
 const superagent = require('superagent')
 const open = require('open')
 
+const SECOND = 1000
+const MINUTE = 60 * SECOND
+const HOUR = 60 * MINUTE
+
 const BASE_URL = "https://lichess.org"
 
 const LOGIN_URL = BASE_URL + "/login?referrer=%2F"
@@ -56,10 +60,49 @@ function readstate(){
     }
 }
 
+function isold(t){
+    return ( new Date().getTime() - t ) > 6 * HOUR
+}
+
+function dresstimefield(obj, field){
+    let t = obj[field]
+    if(t){
+        t = parseInt(t)
+        obj[field + "Date"] = new Date(t).toUTCString()
+        t += 6 * HOUR
+        obj[field + "Next"] = t
+        obj[field + "NextDate"] = new Date(t).toUTCString()
+    }
+}
+
+function filterold(){
+    for(let [turl, template] of Object.entries(state.created)){
+        dresstimefield(template, "createdat")
+        dresstimefield(template, "startDate")
+        for(let [tkey, entry] of Object.entries(template)){
+            if(!entry){
+                delete template[tkey]
+            }
+        }
+        if(!template.startDate){
+            if((!template.createdat) || isold(template.createdat)){
+                console.log("deleting created ( reason : create old )", turl)
+                delete state.created[turl]
+            }
+        }else{
+            if(isold(parseInt(template.startDate))){
+                delete state.created[turl]
+                console.log("deleting created ( reason : start old )", turl)
+            }
+        }
+    }
+}
+
 function writestate(stateopt){
     if(stateopt){
         state = stateopt
     }
+    filterold()
     fs.writeFileSync(STATE_PATH, JSON.stringify(state, null, 2))
 }
 
@@ -68,6 +111,8 @@ function log(err, res){
 }
 
 readstate()
+
+writestate()
 
 function parseplayersfromteams(teams){
     return teams.split("\n").map((team)=>[ team.match(new RegExp(`" by (.*)$`))[1], team.match(new RegExp(`^([^ ]+)`))[1] ])
@@ -200,7 +245,7 @@ function createtourney(username, argsopt, callbackopt){
 }
 
 function logcreate(turl, template){
-    state.created[turl] = {...{turl: turl}, ...template}
+    state.created[turl] = {...{turl: turl, createdat: new Date().getTime()}, ...template}
     writestate()
 }
 
