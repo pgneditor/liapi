@@ -4,13 +4,13 @@ class App extends React.Component{
 
         this.props = props
 
-        this.state = {
-            statetext: "Loading state ..."
+        this.state = {            
         }
     }
 
     setstatetextfromobj(obj){
-        this.setState({statetext: JSON.stringify(obj, null, 2)})
+        document.getElementById("statetextarea").value = JSON.stringify(obj, null, 2)
+        document.getElementById("statetext").focus()
     }
 
     getstate(){
@@ -46,24 +46,44 @@ class App extends React.Component{
             let content = document.getElementById("statetext").value
             document.getElementById("statetext").value = ""
             this.lastcommand = content
-            api({topic: "cli", command: content}, (response)=>{
-                if(response.ok){
-                    this.setstatetextfromobj(response.state)            
-                    if(response.turl){
-                        window.open(response.turl, "_blank")
+            if(content == "save"){
+                let state = JSON.parse(document.getElementById("statetextarea").value)
+                api({topic: "savestate", state: state}, (response)=>{
+                    if(response.ok){
+                        this.setstatetextfromobj(response.state)                                    
+                        this.alert("Saved state ok.")
                     }
-                }
-            })
+                })
+            }else{
+                api({topic: "cli", command: content}, (response)=>{
+                    if(response.ok){
+                        this.setstatetextfromobj(response.state)            
+                        if(response.turl){
+                            window.open(response.turl, "_blank")
+                        }
+                    }
+                })
+            }            
         }
         if(ev.keyCode == 38){
             document.getElementById("statetext").value = this.lastcommand
         }
     }
 
+    alert(text){
+        document.getElementById("alerttext").value = text
+        setTimeout(function(){
+            document.getElementById("alerttext").value = ""
+        }, 3000)
+    }
+
     render(){        
         return e("div", p().dfcc().pad(5).bc("#afa")._,
-            e('textarea', p({value: this.state.statetext, onChange: ()=>{}}).pad(5).w(900).h(300)._, null),
-            e('input', p({id: "statetext", type: "text", onKeyDown: this.statetextkeydown.bind(this)}).ffm().mar(3).fs(18).pad(3).w(400)._, null)
+            e('textarea', p({id: "statetextarea", onChange: ()=>{}}).pad(5).w(1325).h(585)._, null),
+            e('div', {},
+                e('input', p({id: "statetext", type: "text", onKeyDown: this.statetextkeydown.bind(this)}).ffm().mar(3).fs(18).pad(3).w(400)._, null),
+                e('input', p({id: "alerttext", type: "text"}).ffm().mar(3).fs(18).pad(3).w(400).bc("#eee")._, null)
+            )            
         )
     }
 }

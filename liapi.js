@@ -53,7 +53,10 @@ function readstate(){
     }
 }
 
-function writestate(){
+function writestate(stateopt){
+    if(stateopt){
+        state = stateopt
+    }
     fs.writeFileSync(STATE_PATH, JSON.stringify(state, null, 2))
 }
 

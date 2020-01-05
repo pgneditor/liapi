@@ -2,7 +2,7 @@ const express = require('express')
 const open = require('open')
 const fs = require('fs')
 
-const { state, login, jointourney, TOURNEY_URL, createtourney } = require('./liapi')
+let { state, login, jointourney, TOURNEY_URL, createtourney, writestate } = require('./liapi')
 
 const PORT = process.env.PORT || 8080
 
@@ -50,7 +50,7 @@ app.get('/', (req, res) => res.send(`
 
     <div id="root"></div>
 
-    <script src="client/js/index.js?ver=1578216753742.0586"></script>
+    <script src="client/js/index.js?ver=1578218577551.487"></script>
 
   </body>
 
@@ -102,6 +102,12 @@ function cli(res, payload){
 
 function tick(res){
     apisend(res, SUCCESS, {})
+}
+
+function savestate(res, payload){
+    state = payload.state    
+    writestate(state)
+    apisend(res, SUCCESS, {state: state})
 }
 
 app.post('/api', (req, res) => {                
