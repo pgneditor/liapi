@@ -159,7 +159,7 @@ Examples:
 
 In case of team battles you can use a wildcard `*` for username, in that case the username will be inferred to be the leader of the team creating the battle.
 
-If `startDate` is `next`, the start date will be the start date of the last created tourney having a `startDate` property, plus 6 hours. If no such tourney was created, you get an error message.
+If `startDate` is `next`, the start date will be the start date of the last created tourney having a `startDate` property, plus 7 hours. If no such tourney was created, you get an error message.
 
 Keep in mind that old tourneys are deleted from `state.json` upon startup.
 
