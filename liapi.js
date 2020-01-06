@@ -174,7 +174,7 @@ function createtourney(username, argsopt, callbackopt){
 
     if(!args.template) args.template = "default"
 
-    let template = state.templates[args.template]
+    let template = {...{}, ...state.templates[args.template]}
 
     for(let key in template){
         if(args[key]){
@@ -202,6 +202,15 @@ function createtourney(username, argsopt, callbackopt){
         if(nexts.length == 0) return logerror("next start date could not be dertermined", callback)        
         template.startDate = nexts.sort().pop()
     }
+
+    console.log(`create tourney ${template.name}
+by             ${username}
+variant        ${template.variant}
+timecontrol    ${template.clockTime} + ${template.clockIncrement}
+teambattle     ${template.teamBattleByTeam}
+starts         ${template.startDate ? "at " + new Date(parseInt(template.startDate)).toUTCString() : "within " + template.waitMinutes.toString() + "min(s)"}
+teams          ${template.teams}
+`)
 
     superagent
     .post(CREATE_TOURNEY_URL)
