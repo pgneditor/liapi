@@ -73,7 +73,7 @@ function isold(t){
 
 function dresstimefield(obj, field){
     let t = obj[field]
-    if(t){
+    if( t && ( t != "next" ) ){
         t = parseInt(t)
         obj[field + "Date"] = new Date(t).toUTCString()
         t += 6 * HOUR
