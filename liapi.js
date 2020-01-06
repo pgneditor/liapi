@@ -197,7 +197,8 @@ function createtourney(username, argsopt, callbackopt){
 
     if(template.startDate == "next"){
         let nexts = Object.entries(state.created)        
-        nexts = nexts.filter((entry)=>entry[0]!=TOURNEY_URL).filter((entry)=> entry[1].startDateNext)        
+        nexts = nexts.filter((entry)=>entry[1].startDate)
+        nexts = nexts.filter((entry)=>entry[0]!=TOURNEY_URL).filter((entry)=> entry[1].startDateNext)                
         nexts = nexts.map((entry)=> entry[1].startDateNext)        
         if(nexts.length == 0) return logerror("next start date could not be dertermined", callback)        
         template.startDate = nexts.sort().pop()
