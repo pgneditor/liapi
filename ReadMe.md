@@ -2,7 +2,7 @@
 
 Automate routines that need cookie authorization.
 
-The module can be used in three ways, as  Node.js module, as a CLI and as a GUI.
+The module can be used in three ways, as a Node.js module, as a CLI or as a GUI.
 
 # Installation
 
@@ -72,13 +72,13 @@ let { jointourney } = require('liapi')
 jointourney(tourneyid, username, password, teamid, callbackopt)
 ```
 
-Arguments `password` ( tourney password, not user password ! ), `teamid` ( for team battles only ) and `callbackopt` ( defines a callback upon success ) are optional, use `null` to ignore them. If `callbackopt` is a function it will be called after submitting the request.
+Arguments `password` ( tourney password, not user password ! ), `teamid` ( for team battles only ) and `callbackopt` ( defines a callback upon success ) are optional ( depending on tourney type ), use `null` to ignore them. If `callbackopt` is a function it will be called after submitting the request.
 
 ### CLI / GUI
 
 `jointourney tourneyid username[:password] teamid`
 
-Note that you can attach an optional password to the second argument with ":". The `teamid` parameter is optional, it should only be used for joining a team battle.
+Note that you can attach a tourney(!) password to the second argument with ":" for joining a password protected tourney. The `teamid` parameter should only be used for joining a team battle.
 
 ## createtourney
 
@@ -157,11 +157,17 @@ Examples:
 
 `createtourney("userfoo", {template: "custom", waitMinutes: "10"})` "custom" template with `waitMinutes` modified to 10
 
+In case of team battles you can use a wildcard `*` for username, in that case the username will be inferred to be the leader of the team creating the battle.
+
+If `startDate` is `next`, the start date will be the start date of the last created tourney having a `startDate` property, plus 6 hours. If no such tourney was created, you get an error message.
+
+Keep in mind that old tourneys are deleted from `state.json` upon startup.
+
 ### CLI / GUI
 
 `createtourney username template`
 
-Here `template` is a template id in `state.json`. The whole template will be taken from `state.json`. The template parameter is optional, if not present the default template will be used. Note that the default template should not be edited. To edit a template you have to create a separate template under a custom key ( other than default ).
+Here `template` is a template id in `state.json`. The whole template will be taken from `state.json`. The template parameter is optional, if not present the default template will be used. Note that the default template should not be edited. To edit a template you have to create a separate template under a custom id ( other than `default` ).
 
 # Editing and saving `state.json`
 
@@ -170,3 +176,25 @@ You can either edit the state with a text editor, or you can use the editor in t
 `save`
 
 at the GUI's command prompt. You will get a success message. If not, your JSON may very well be syntactically incorrect.
+
+# Using the GUI
+
+## Aliases
+
+You can define an alias with:
+
+`a aliasname=command`
+
+then invoke the command with:
+
+`aliasname`
+
+To view aliases type:
+
+`a`
+
+To delete an alias type:
+
+`a aliasname=`
+
+You can always bring back the last issued command using the Up cursor key.
