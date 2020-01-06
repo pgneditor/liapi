@@ -168,6 +168,13 @@ function cookie(username){
     return "lila2=" + state.users[username].lila2
 }
 
+function makedatesane(timestamp){
+    let t = parseInt(timestamp)
+    let now = new Date().getTime()
+    while(t < now) t += HOUR
+    return t
+}
+
 function createtourney(username, argsopt, callbackopt){
     let callback = callbackopt || (()=>{})
     let args = argsopt || {}
@@ -201,7 +208,7 @@ function createtourney(username, argsopt, callbackopt){
         nexts = nexts.filter((entry)=>entry[0]!=TOURNEY_URL).filter((entry)=> entry[1].startDateNext)                
         nexts = nexts.map((entry)=> entry[1].startDateNext)        
         if(nexts.length == 0) return logerror("next start date could not be dertermined", callback)        
-        template.startDate = nexts.sort().pop()
+        template.startDate = makedatesane(nexts.sort().pop())
     }
 
     console.log(`create tourney ${template.name}
