@@ -172,7 +172,7 @@ function makedatesane(timestamp){
     let t = parseInt(timestamp)
     let now = new Date().getTime()
     while(t < now) t += HOUR
-    return t
+    return t + HOUR
 }
 
 function createtourney(username, argsopt, callbackopt){
