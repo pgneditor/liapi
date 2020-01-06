@@ -20,6 +20,13 @@ const STANDARD_START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -
 
 let state
 
+function logerror(error, callback){
+    console.log(error)
+    let eobj = {ok: false, status: error}
+    callback(eobj)
+    return eobj
+}
+
 function readstate(){
     try{
         let content = fs.readFileSync(STATE_PATH)
@@ -118,6 +125,13 @@ function parseplayersfromteams(teams){
     return teams.split("\n").map((team)=>[ team.match(new RegExp(`" by (.*)$`))[1], team.match(new RegExp(`^([^ ]+)`))[1] ])
 }
 
+function inferusernamefromteamsandteamid(teams, teamid){
+    if(!teams) return null
+    let entry = parseplayersfromteams(teams).find((entry)=>entry[1] == teamid)
+    if(!entry) return null
+    return entry[0]
+}
+
 function login(username, password, callbackopt){
     let callback = callbackopt || (()=>{})
     superagent.agent()
@@ -130,27 +144,15 @@ function login(username, password, callbackopt){
 
         let hdr = res.header
 
-        if(!hdr["set-cookie"]){
-            console.log("no set-cookie header")                
-            callback({ok: false, status: "no set-cookie header"})
-            return
-        }
+        if(!hdr["set-cookie"]) return logerror("no set-cookie header", callback)        
         
         let setcookie = hdr['set-cookie'][0]
 
-        console.log("set-cookie", setcookie)
-
         let m = setcookie.match(/lila2=([^;]+);/)
 
-        if(!m){
-            console.log("no lila2 cookie")            
-            callback({ok: false, status: "no lila2 cookie"})
-            return
-        }
+        if(!m) return logerror("no lila2 cookie", callback)                
 
         let lila2 = m[1]
-
-        console.log("obtained cookie", lila2)
 
         state.users[username] = {
             lila2: lila2
@@ -186,6 +188,19 @@ function createtourney(username, argsopt, callbackopt){
 
     if(!template.teamBattleByTeam){
         delete template.teamBattleByTeam
+    }
+
+    if(username == "*"){
+        username = inferusernamefromteamsandteamid(template.teams, template.teamBattleByTeam)
+        if(!username) return logerror("no username could be inferred", callback)
+    }
+
+    if(template.startDate == "next"){
+        let nexts = Object.entries(state.created)        
+        nexts = nexts.filter((entry)=>entry[0]!=TOURNEY_URL).filter((entry)=> entry[1].startDateNext)        
+        nexts = nexts.map((entry)=> entry[1].startDateNext)        
+        if(nexts.length == 0) return logerror("next start date could not be dertermined", callback)        
+        template.startDate = nexts.sort().pop()
     }
 
     superagent

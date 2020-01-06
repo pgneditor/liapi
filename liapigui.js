@@ -42,7 +42,7 @@ app.get('/', (req, res) => res.send(`
         <script src="client/cdn/react-dom.production.min.js"></script>        
     `}
 
-    <script src="client/js/utils.js?ver=1578255525685.7053"></script>
+    <script src="client/js/utils.js?ver=1578281072867.695"></script>
 
   </head>
 
@@ -50,7 +50,7 @@ app.get('/', (req, res) => res.send(`
 
     <div id="root"></div>
 
-    <script src="client/js/index.js?ver=1578260330840.21"></script>
+    <script src="client/js/index.js?ver=1578282754366.8286"></script>
 
   </body>
 

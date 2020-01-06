@@ -9,8 +9,8 @@ class App extends React.Component{
     }
 
     setstatetextfromobj(obj){
-        document.getElementById("statetextarea").value = JSON.stringify(obj, null, 2)
-        document.getElementById("statetext").focus()
+        document.getElementById("statetextarea").value = JSON.stringify(obj, null, 2)        
+        setTimeout(function(){document.getElementById("statetext").focus()}, 0)
     }
 
     getstate(){
@@ -48,6 +48,27 @@ class App extends React.Component{
             let content = document.getElementById("statetext").value
             document.getElementById("statetext").value = ""
             this.lastcommand = content
+            let aliases = getlocalelse("aliases", {})
+            if(content == "a"){
+                this.alert("aliases:\n" + Object.entries(aliases).map((entry)=> ` --> ${entry[0]} = ${entry[1]}`).join("\n"))
+                return
+            }
+            let m = content.match(/^a ([^=]+)=(.*)/)            
+            if(m){
+                let alias = m[1]
+                let command = m[2]                                
+                if(command){
+                    aliases[alias] = command
+                }else{
+                    delete aliases[alias]
+                }
+                storelocal("aliases", aliases)
+                return
+            }
+            let fa = aliases[content]
+            if(fa){
+                content = fa
+            }
             if(content == "save"){
                 let state = JSON.parse(document.getElementById("statetextarea").value)
                 api({topic: "savestate", state: state}, (response)=>{
@@ -70,14 +91,16 @@ class App extends React.Component{
             }            
         }
         if(ev.keyCode == 38){
-            document.getElementById("statetext").value = this.lastcommand
+            document.getElementById("statetext").value = this.lastcommand || ""
         }
     }
 
     alert(text){
-        document.getElementById("alerttext").value = text
+        let ad = document.getElementById("alertdiv")
+        ad.innerHTML = text
+        ad.style.display = "block"
         setTimeout(function(){
-            document.getElementById("alerttext").value = ""
+            ad.style.display = "none"
         }, 3000)
     }
 
@@ -86,15 +109,15 @@ class App extends React.Component{
     }
 
     render(){        
-        return e("div", p({id: "maindiv"}).dfcc()._,
+        return e("div", p({id: "maindiv"}).dfcc().por()._,
             e('textarea', p({id: "statetextarea", onChange: ()=>{}}).pad(5).w(1325).h(600)._, null),
-            e('div', {},
+            e('div', {},                
+                e('input', p({id: "statetext", type: "text", onKeyDown: this.statetextkeydown.bind(this)}).ffm().mar(3).fs(18).pad(3).w(600)._, null),                
                 e('input', p({type: "button", onClick: this.show.bind(this, "logtextarea"), value: "Show log"})._, null),
-                e('input', p({id: "statetext", type: "text", onKeyDown: this.statetextkeydown.bind(this)}).ffm().mar(3).fs(18).pad(3).w(400)._, null),
-                e('input', p({id: "alerttext", type: "text"}).ffm().mar(3).fs(16).pad(3).w(400)._, null),
                 e('input', p({type: "button", onClick: this.show.bind(this, "maindiv"), value: "Show state"})._, null),
             ),            
             e('textarea', p({id: "logtextarea", onChange: ()=>{}}).pad(5).w(1325).h(600)._, null),
+            e('pre', p({id: "alertdiv"}).poa().t(50).l(50).bc("#efe").fs(20).pad(10).disp("none")._, null)
         )
     }
 }
