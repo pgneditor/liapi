@@ -39,6 +39,7 @@ class ComponentProps_{
     mar(x){this.addstyle("margin", x + "px");return this}
     pad(x){this.addstyle("padding", x + "px");return this}
     disp(x){this.addstyle("display", x);return this}
+    dib(){this.addstyle("display", "inline-block");return this}
     fd(x){this.addstyle("flexDirection", x);return this}
     ai(x){this.addstyle("alignItems", x);return this}    
     dfcc(){return this.disp("flex").fd("column").ai("center")}

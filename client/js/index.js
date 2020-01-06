@@ -5,11 +5,12 @@ class App extends React.Component{
         this.props = props
 
         this.state = {            
+            statejson: {message: "Loading state ..."}
         }
     }
 
     setstatetextfromobj(obj){
-        document.getElementById("statetextarea").value = JSON.stringify(obj, null, 2)        
+        this.setState({statejson: obj})        
         setTimeout(function(){document.getElementById("statetext").focus()}, 0)
     }
 
@@ -22,7 +23,7 @@ class App extends React.Component{
     }
 
     componentDidMount(){
-        this.getstate()
+        setTimeout(this.getstate.bind(this), 500)
 
         this.apitimeout = setTimeout(function(){
             window.close()
@@ -108,15 +109,26 @@ class App extends React.Component{
         document.getElementById(element).scrollIntoView()
     }
 
+    buildcreated(statejson){        
+        if(!statejson.created){return null}
+        let createdentries = Object.entries(statejson.created)
+        return createdentries.map((entry)=>
+            e('div', p( ).dib()._,
+                e('a', p({target: "_blank", href: entry[0]}).mar(5).fs(10)._, entry[0].match(/\/([^\/]*)$/)[1])
+            )
+        )
+    }
+
     render(){        
         return e("div", p({id: "maindiv"}).dfcc().por()._,
-            e('textarea', p({id: "statetextarea", onChange: ()=>{}}).pad(5).w(1325).h(600)._, null),
+            e('textarea', p({id: "statetextarea", value: JSON.stringify(this.state.statejson, null, 3), onChange: ()=>{}}).pad(5).w(1325).h(600)._, null),
             e('div', {},                
-                e('input', p({id: "statetext", type: "text", onKeyDown: this.statetextkeydown.bind(this)}).ffm().mar(3).fs(18).pad(3).w(600)._, null),                
+                e('input', p({id: "statetext", type: "text", onKeyDown: this.statetextkeydown.bind(this)}).ffm().mar(3).fs(18).pad(3).w(400)._, null),                
                 e('input', p({type: "button", onClick: this.show.bind(this, "logtextarea"), value: "Show log"})._, null),
                 e('input', p({type: "button", onClick: this.show.bind(this, "maindiv"), value: "Show state"})._, null),
+                this.buildcreated(this.state.statejson),
             ),            
-            e('textarea', p({id: "logtextarea", onChange: ()=>{}}).pad(5).w(1325).h(600)._, null),
+            e('textarea', p({id: "logtextarea", onChange: ()=>{}}).pad(5).w(1325).h(600)._, null),            
             e('pre', p({id: "alertdiv"}).poa().t(50).l(50).bc("#efe").fs(20).pad(10).disp("none")._, null)
         )
     }
