@@ -50,7 +50,7 @@ app.get('/', (req, res) => res.send(`
 
     <div id="root"></div>
 
-    <script src="client/js/index.js?ver=1578288159802.4814"></script>
+    <script src="client/js/index.js?ver=1578462131886.66"></script>
 
   </body>
 

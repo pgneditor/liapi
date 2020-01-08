@@ -113,7 +113,7 @@ class App extends React.Component{
         if(!statejson.created){return null}
         let createdentries = Object.entries(statejson.created)
         return createdentries.map((entry)=>
-            e('div', p( ).dib()._,
+            e('div', p({key: entry[0]}).dib()._,
                 e('a', p({target: "_blank", href: entry[0]}).mar(5).fs(10)._, entry[0].match(/\/([^\/]*)$/)[1])
             )
         )
@@ -121,7 +121,7 @@ class App extends React.Component{
 
     render(){        
         return e("div", p({id: "maindiv"}).dfcc().por()._,
-            e('textarea', p({id: "statetextarea", value: JSON.stringify(this.state.statejson, null, 3), onChange: ()=>{}}).pad(5).w(1325).h(600)._, null),
+            e('textarea', p({id: "statetextarea", value: JSON.stringify(this.state.statejson, null, 3), onChange: function(ev){this.setState({statejson: JSON.parse(ev.target.value)})}.bind(this)}).pad(5).w(1325).h(600)._, null),
             e('div', {},                
                 e('input', p({id: "statetext", type: "text", onKeyDown: this.statetextkeydown.bind(this)}).ffm().mar(3).fs(18).pad(3).w(400)._, null),                
                 e('input', p({type: "button", onClick: this.show.bind(this, "logtextarea"), value: "Show log"})._, null),
