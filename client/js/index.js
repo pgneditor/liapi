@@ -11,6 +11,7 @@ class App extends React.Component{
 
     setstatetextfromobj(obj){        
         document.getElementById("statetextarea").value = JSON.stringify(obj, null, 3)
+        this.setState({statejson: obj})
         setTimeout(function(){document.getElementById("statetext").focus()}, 0)
     }
 
