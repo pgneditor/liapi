@@ -47,6 +47,29 @@ class App extends React.Component{
         }.bind(this), 3000)
     }
 
+    execCommand(content){
+        if(content == "save"){
+            let state = JSON.parse(document.getElementById("statetextarea").value)
+            api({topic: "savestate", state: state}, (response)=>{
+                if(response.ok){
+                    this.setstatetextfromobj(response.state)                                    
+                    this.alert("Saved state ok.")
+                }
+            })
+        }else{
+            api({topic: "cli", command: content}, (response)=>{
+                if(response.ok){
+                    if(response.state){
+                        this.setstatetextfromobj(response.state)            
+                    }                        
+                    if(response.turl){
+                        window.open(response.turl, "_blank")
+                    }
+                }
+            })
+        }            
+    }
+
     statetextkeydown(ev){        
         if(ev.keyCode == 13){
             let content = document.getElementById("statetext").value
@@ -73,26 +96,7 @@ class App extends React.Component{
             if(fa){
                 content = fa
             }
-            if(content == "save"){
-                let state = JSON.parse(document.getElementById("statetextarea").value)
-                api({topic: "savestate", state: state}, (response)=>{
-                    if(response.ok){
-                        this.setstatetextfromobj(response.state)                                    
-                        this.alert("Saved state ok.")
-                    }
-                })
-            }else{
-                api({topic: "cli", command: content}, (response)=>{
-                    if(response.ok){
-                        if(response.state){
-                            this.setstatetextfromobj(response.state)            
-                        }                        
-                        if(response.turl){
-                            window.open(response.turl, "_blank")
-                        }
-                    }
-                })
-            }            
+            this.execCommand(content)
         }
         if(ev.keyCode == 38){
             document.getElementById("statetext").value = this.lastcommand || ""
@@ -127,8 +131,17 @@ class App extends React.Component{
             e('textarea', p({id: "statetextarea"}).pad(5).w(1325).h(600)._, null),
             e('div', {},                
                 e('input', p({id: "statetext", type: "text", onKeyDown: this.statetextkeydown.bind(this)}).ffm().mar(3).fs(18).pad(3).w(400)._, null),                
+                Object.entries(getlocalelse("aliases", {})).map(entry=>e('button', {
+                    key: "alias" + entry[0],
+                    style: {
+                        margin: "3px",
+                        fontSize: "20px",
+                        backgroundColor: "#cfc"
+                    },
+                    onClick: this.execCommand.bind(this, entry[1])
+                }, entry[0])),
                 e('input', p({type: "button", onClick: this.show.bind(this, "logtextarea"), value: "Show log"})._, null),
-                e('input', p({type: "button", onClick: this.show.bind(this, "maindiv"), value: "Show state"})._, null),
+                e('input', p({type: "button", onClick: this.show.bind(this, "maindiv"), value: "Show state"})._, null),                
                 this.buildcreated(this.state.statejson),
             ),            
             e('textarea', p({id: "logtextarea", onChange: ()=>{}}).pad(5).w(1325).h(600)._, null),            
